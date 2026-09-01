@@ -1,0 +1,30 @@
+# Docker
+node_modules
+npm-debug.log
+dist
+.env
+.env.local
+.dockerignore
+
+# Build artifacts
+build/
+dist/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma
+prisma/migrations/
+!prisma/schema.prisma
+
+# Testing
+coverage/
+.nyc_output/

@@ -1,0 +1,139 @@
+version: '3.8'
+
+# Development version of docker-compose with live reload
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ricos_postgres_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: ricos
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - ricos_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend_common:
+    build:
+      context: ./BE
+      dockerfile: Dockerfile.dev
+    container_name: ricos_backend_common_dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:123@postgres:5432/ricos
+      COMMON_PORT: 3000
+      USER_BACKEND_PORT: 8080
+      OFFICIAL_BACKEND_PORT: 8081
+      JWT_SECRET: your_super_secret_jwt_key_change_in_production
+      PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY:-YOUR_PERPLEXITY_API_KEY_HERE}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-YOUR_OPENROUTER_API_KEY_HERE}
+      APP_URL: http://localhost:3000
+      NODE_ENV: development
+    volumes:
+      - ./BE:/app
+      - /app/node_modules
+      - /app/dist
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ricos_network
+    command: npm run start common -- --watch
+
+  backend_user:
+    build:
+      context: ./BE
+      dockerfile: Dockerfile.dev
+    container_name: ricos_backend_user_dev
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgresql://postgres:123@postgres:5432/ricos
+      COMMON_PORT: 3000
+      USER_BACKEND_PORT: 8080
+      OFFICIAL_BACKEND_PORT: 8081
+      JWT_SECRET: your_super_secret_jwt_key_change_in_production
+      PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY:-YOUR_PERPLEXITY_API_KEY_HERE}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-YOUR_OPENROUTER_API_KEY_HERE}
+      APP_URL: http://localhost:8080
+      NODE_ENV: development
+    volumes:
+      - ./BE:/app
+      - /app/node_modules
+      - /app/dist
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ricos_network
+    command: npm run start user_backend -- --watch
+
+  backend_official:
+    build:
+      context: ./BE
+      dockerfile: Dockerfile.dev
+    container_name: ricos_backend_official_dev
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      DATABASE_URL: postgresql://postgres:123@postgres:5432/ricos
+      COMMON_PORT: 3000
+      USER_BACKEND_PORT: 8080
+      OFFICIAL_BACKEND_PORT: 8081
+      JWT_SECRET: your_super_secret_jwt_key_change_in_production
+      PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY:-YOUR_PERPLEXITY_API_KEY_HERE}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-YOUR_OPENROUTER_API_KEY_HERE}
+      APP_URL: http://localhost:8081
+      NODE_ENV: development
+    volumes:
+      - ./BE:/app
+      - /app/node_modules
+      - /app/dist
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ricos_network
+    command: npm run start official_backend -- --watch
+
+  frontend:
+    build:
+      context: ./FE
+      dockerfile: Dockerfile.dev
+    container_name: ricos_frontend_dev
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./FE:/app
+      - /app/node_modules
+    depends_on:
+      - backend_common
+      - backend_user
+      - backend_official
+    networks:
+      - ricos_network
+    command: npm run dev -- --host
+
+volumes:
+  postgres_data_dev:
+    driver: local
+
+networks:
+  ricos_network:
+    driver: bridge

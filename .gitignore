@@ -1,0 +1,140 @@
+# ==========================
+# Global / OS
+# ==========================
+# macOS
+.DS_Store
+# Windows
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ==========================
+# Node / JavaScript / TypeScript (FE & BE)
+# ==========================
+# Node modules
+node_modules/
+**/node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+out/
+.vite/
+.cache/
+
+# TypeScript incremental build files
+*.tsbuildinfo
+
+# Vite / Frontend
+public/build/
+
+# ==========================
+# Environment and secrets
+# ==========================
+.env
+.env.*
+env.local
+*.secret
+secrets*.env
+
+# ==========================
+# Coverage, testing, and reports
+# ==========================
+coverage/
+coverage-*/
+nyc_output/
+jest-cache/
+jest-junit.xml
+
+# ==========================
+# Editors and IDEs
+# ==========================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.iml
+
+# ==========================
+# Python (if present in BE)
+# ==========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+venv/
+env/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# ==========================
+# Java (if present in BE)
+# ==========================
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# ==========================
+# .NET (if present)
+# ==========================
+bin/
+obj/
+
+# ==========================
+# Workspace-specific (FE & BE folders)
+# ==========================
+# Frontend
+FE/node_modules/
+FE/dist/
+FE/build/
+FE/.vite/
+FE/.cache/
+FE/.env
+
+# Backend
+BE/node_modules/
+BE/dist/
+BE/build/
+BE/.env
+BE/common.env
+
+# Local run logs / debug output (never commit)
+BE/ps_out.txt
+BE/count_out.txt
+BE/gen_err.txt
+BE/gen_out.txt
+BE/sanity_err.txt
+BE/sanity_out.txt
+BE/seed_err.txt
+BE/seed_out.txt
+BE/poly_size_output.txt
+*.out.txt
+*_err.txt
+*_out.txt
+
+# ==========================
+# Misc
+# ==========================
+*.tgz
+*.zip
+*.tar
+*.bak
+*.tmp
+
+# Ignore local OS/IDE swap files
+*~
+*.swp
