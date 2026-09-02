@@ -1,0 +1,383 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = []
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
+}
+
+model AllUsers {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  user_type    String // 'user', 'ngo', 'govt', 'volunteer'
+  full_name    String
+  user_id      String?  @unique
+  ngo_id       String?  @unique
+  govt_id      String?  @unique
+  volunteer_id String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user       User?       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  ngo        NGO?        @relation(fields: [ngo_id], references: [id], onDelete: Cascade)
+  government Government? @relation(fields: [govt_id], references: [id], onDelete: Cascade)
+  volunteer  Volunteer?  @relation(fields: [volunteer_id], references: [id], onDelete: Cascade)
+
+  @@map("all_users")
+}
+
+model User {
+  id                         String    @id @default(uuid())
+  email                      String    @unique
+  full_name                  String
+  dob                        DateTime?
+  gender                     String?
+  phone_number               String
+  alternate_phone            String?
+  current_address            String
+  pincode                    String
+  city                       String
+  state                      String
+  country                    String    @default("India")
+  live_location_permission   Boolean   @default(false)
+  home_location_lat          Float?
+  home_location_lng          Float?
+  aadhar_id                  String    @unique
+  blood_group                String?
+  medical_conditions         String?
+  allergies                  String?
+  disabilities               String?
+  emergency_contact_name     String
+  emergency_contact_relation String
+  emergency_contact_phone    String
+  primary_language           String
+  secondary_language         String?
+  communication_assistance   Boolean   @default(false)
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime  @updatedAt
+  allUsers                   AllUsers?
+
+  @@map("users")
+}
+
+model NGO {
+  id                  String          @id @default(uuid())
+  email               String          @unique
+  ngo_name            String
+  registration_number String          @unique
+  ngo_type            String
+  year_established    Int
+  mission_statement   String?
+  official_contact    String
+  alternate_contact   String?
+  website             String?
+  registered_address  String
+  operational_areas   String
+  location_lat        Float?
+  location_lng        Float?
+  admin_name          String
+  admin_designation   String
+  admin_mobile        String
+  admin_email         String
+  aadhar_card         String
+  resource_types      String?
+  team_strength       Int?
+  bank_account_number String
+  isVerified          Boolean         @default(true)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  responder           Responder?
+  allUsers            AllUsers?
+  inventoryItems      InventoryItem[]
+  groups              Group[]
+
+  @@map("ngos")
+}
+
+model Government {
+  id                  String     @id @default(uuid())
+  email               String     @unique
+  agency_name         String
+  department          String
+  govt_level          String
+  official_id         String     @unique
+  department_code     String
+  hq_address          String
+  incharge_name       String
+  incharge_mobile     String
+  incharge_email      String
+  control_room_number String?
+  jurisdiction_area   String
+  resource_types      String?
+  resource_capacity   Int?
+  bank_account_number String
+  isVerified     Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  responder           Responder?
+  allUsers            AllUsers?
+  groups              Group[]
+
+  @@map("governments")
+}
+
+model Volunteer {
+  id                   String          @id @default(uuid())
+  email                String          @unique
+  group_name           String
+  volunteer_type       String
+  group_size           Int
+  operational_areas    String
+  social_media_link    String?
+  leader_name          String
+  leader_phone         String
+  leader_email         String
+  id_proof             String?
+  has_medical_training Boolean         @default(false)
+  has_first_aid_cert   Boolean         @default(false)
+  has_vehicle          Boolean         @default(false)
+  languages_spoken     String
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  responder            Responder?
+  allUsers             AllUsers?
+  inventoryItems       InventoryItem[]
+  groups               Group[]
+
+  @@map("volunteers")
+}
+
+model Responder {
+  id                  String   @id @default(uuid())
+  ngo_id              String?  @unique
+  volunteer_id        String?  @unique
+  govt_id             String?  @unique
+  services_provided   String
+  bank_account_number String
+  location_lat        Float?
+  location_lng        Float?
+  location_address    String?
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  ngo        NGO?        @relation(fields: [ngo_id], references: [id], onDelete: Cascade)
+  volunteer  Volunteer?  @relation(fields: [volunteer_id], references: [id], onDelete: Cascade)
+  government Government? @relation(fields: [govt_id], references: [id], onDelete: Cascade)
+
+  @@map("responders")
+}
+
+model InventoryItem {
+  id             String   @id @default(uuid())
+  item           String
+  total_quantity Int
+  ngo_id         String?
+  volunteer_id   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  ngo              NGO?                      @relation(fields: [ngo_id], references: [id], onDelete: Cascade)
+  volunteer        Volunteer?                @relation(fields: [volunteer_id], references: [id], onDelete: Cascade)
+  groupAllocations GroupResourceAllocation[]
+
+  @@map("inventory_items")
+}
+
+model Group {
+  id           String    @id @default(uuid())
+  group_name   String
+  username     String    @unique
+  email        String?   @unique
+  password     String
+  creator_type String // 'ngo' | 'govt' | 'volunteer'
+  creator_id   String
+  ngo_id       String?
+  govt_id      String?
+  volunteer_id String?
+  ttl_type     String // '5_days' | '20_days' | '30_days' | 'no_expiry'
+  expires_at   DateTime?
+  is_active    Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  ngo                 NGO?                      @relation(fields: [ngo_id], references: [id], onDelete: Cascade)
+  government          Government?               @relation(fields: [govt_id], references: [id], onDelete: Cascade)
+  volunteer           Volunteer?                @relation(fields: [volunteer_id], references: [id], onDelete: Cascade)
+  resourceAllocations GroupResourceAllocation[]
+  location            GroupLocation?
+  assignments         GroupAssignment[]
+
+  @@map("groups")
+}
+
+model GroupResourceAllocation {
+  id                 String   @id @default(uuid())
+  group_id           String
+  inventory_item_id  String
+  allocated_quantity Int
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  group         Group         @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  inventoryItem InventoryItem @relation(fields: [inventory_item_id], references: [id], onDelete: Cascade)
+
+  @@unique([group_id, inventory_item_id])
+  @@map("group_resource_allocations")
+}
+
+model GroupLocation {
+  id            String   @id @default(uuid())
+  group_id      String   @unique // Only latest ping per group (upsert pattern)
+  latitude      Float
+  longitude     Float
+  accuracy      Float?
+  status        String   @default("available") // available, deployed, rescuing, offline
+  battery_level Int?
+  timestamp     DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  group Group @relation(fields: [group_id], references: [id], onDelete: Cascade)
+
+  @@index([group_id])
+  @@map("group_locations")
+}
+
+model GroupAssignment {
+  id                String    @id @default(uuid())
+  group_id          String
+  disaster_report_id String
+  assigned_by       String    // allUsers.id of the NGO/Govt admin who assigned
+  assigned_by_type  String    // 'ngo' | 'govt' | 'volunteer'
+  status            String    @default("active") // active, completed, cancelled
+  notes             String?
+  assigned_at       DateTime  @default(now())
+  completed_at      DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  group Group @relation(fields: [group_id], references: [id], onDelete: Cascade)
+
+  @@index([group_id])
+  @@index([disaster_report_id])
+  @@index([status])
+  @@map("group_assignments")
+}
+
+model ResponderLocation {
+  id            String   @id @default(uuid())
+  responder_id  String
+  latitude      Float
+  longitude     Float
+  accuracy      Float?
+  status        String   @default("available") // available, deployed, rescuing, offline
+  battery_level Int?
+  timestamp     DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  @@index([responder_id, timestamp])
+  @@map("responder_locations")
+}
+
+model DisasterReport {
+  id                  String    @id @default(uuid())
+  responder_id        String? // Optional - for responders (NGO/Govt/Volunteer)
+  user_id             String? // Optional - for regular users
+  is_sos              Boolean   @default(false) // True if submitted via SOS button
+  pincode             String?
+  city                String?
+  village             String?
+  latitude            Float?
+  longitude           Float?
+  severity            String // LOW, MODERATE, SEVERE
+  water_level         String?
+  affected_population Int?
+  stuck_people_found  Boolean   @default(false)
+  resources_needed    String? // comma-separated: food, medical, rescue_boat, ambulance
+  notes               String?
+  images              String? // JSON array of image URLs
+  polygon             Json? // GeoJSON polygon from pincode
+  status              String    @default("pending") // pending, approved, rejected, resolved
+  approved_by         String?
+  approved_at         DateTime?
+  resolved_by         String? // Group ID that resolved the incident
+  resolved_at         DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([pincode])
+  @@index([status])
+  @@index([severity])
+  @@index([user_id])
+  @@index([responder_id])
+  @@map("disaster_reports")
+}
+
+model PincodePolygon {
+  id        String   @id @default(uuid())
+  pincode   String   @unique
+  state     String
+  district  String?
+  polygon   Json // GeoJSON polygon
+  createdAt DateTime @default(now())
+
+  @@index([pincode])
+  @@map("pincode_polygons")
+}
+
+model Donation {
+  id             String   @id @default(uuid())
+  donor_user_id  String? // User who donated (nullable for anonymous)
+  donor_name     String? // Name if not anonymous
+  donor_email    String? // Email for receipt
+  recipient_type String // 'ngo', 'govt', 'volunteer', 'ricos'
+  recipient_id   String? // ID of NGO/Govt/Volunteer (null if donating to RICOS)
+  recipient_name String // Name of recipient organization
+  amount         Float
+  currency       String   @default("INR")
+  payment_method String // 'card', 'upi', 'netbanking', 'wallet'
+  transaction_id String   @unique
+  payment_status String   @default("pending") // pending, success, failed
+  is_anonymous   Boolean  @default(false)
+  message        String? // Optional message from donor
+  receipt_url    String? // URL to receipt PDF
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  transaction Transaction?
+
+  @@index([donor_user_id])
+  @@index([recipient_id])
+  @@index([payment_status])
+  @@index([createdAt])
+  @@map("donations")
+}
+
+model Transaction {
+  id              String    @id @default(uuid())
+  donation_id     String    @unique
+  gateway         String // 'dummy', 'stripe', 'razorpay'
+  gateway_tx_id   String? // Payment gateway transaction ID
+  amount          Float
+  currency        String    @default("INR")
+  status          String // 'pending', 'processing', 'success', 'failed', 'refunded'
+  payment_details Json? // Store payment gateway response
+  initiated_at    DateTime  @default(now())
+  completed_at    DateTime?
+
+  donation Donation @relation(fields: [donation_id], references: [id], onDelete: Cascade)
+
+  @@index([gateway_tx_id])
+  @@index([status])
+  @@map("transactions")
+}
