@@ -1,0 +1,636 @@
+@import "tailwindcss";
+
+/* Critical fix for horizontal scroll on mobile */
+* {
+	box-sizing: border-box;
+}
+
+html {
+	overflow-x: hidden;
+	width: 100%;
+}
+
+body {
+	overflow-x: hidden;
+	width: 100%;
+	position: relative;
+}
+
+#root {
+	overflow-x: hidden;
+	width: 100%;
+}
+
+/* Dark theme for RICOS Landing Page - Simplified 3-Color Scheme */
+:root {
+	/* Base */
+	--background: #0a0a0a;
+	--foreground: #ededed;
+	--muted: #1a1a1a;
+	--muted-foreground: #a1a1aa;
+
+	/* Primary Color Scheme */
+	--primary: #3b82f6;
+	--primary-light: #60a5fa;
+	--primary-foreground: #ffffff;
+	
+	/* Secondary (Dark backgrounds) */
+	--secondary: #1e1e1e;
+	--secondary-foreground: #fafafa;
+	
+	/* Simplified accent to match primary */
+	--accent: #1e1e1e;
+	--accent-foreground: #fafafa;
+
+	/* Surfaces & UI - using secondary */
+	--card: #1e1e1e;
+	--card-foreground: #fafafa;
+	--popover: #1e1e1e;
+	--popover-foreground: #fafafa;
+	--border: #3b82f6;
+	--input: #1e1e1e;
+	--ring: #3b82f6;
+	--radius: 0.5rem;
+
+	/* Actions */
+	--destructive: #ef4444;
+	--destructive-foreground: #ffffff;
+}
+
+/* Make sure html/body take full height */
+html, body, #root {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+/* Improved mobile viewport handling */
+html {
+	font-size: 16px;
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+}
+
+body {
+	background-color: var(--background);
+	color: var(--foreground);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+		sans-serif;
+	min-height: 100vh;
+	min-height: -webkit-fill-available;
+}
+
+/* Prevent content from touching edges on all sections */
+section, main, article {
+	overflow-x: hidden;
+	width: 100%;
+}
+
+/* Smooth scroll behavior */
+html {
+	scroll-behavior: smooth;
+}
+
+/* Custom scrollbar styling - dark theme */
+/* For Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+}
+
+::-webkit-scrollbar-track {
+	background: #0f172a; /* slate-900 */
+	border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #475569; /* slate-600 */
+	border-radius: 6px;
+	border: 2px solid #0f172a; /* slate-900 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #64748b; /* slate-500 */
+}
+
+::-webkit-scrollbar-thumb:active {
+	background: #94a3b8; /* slate-400 */
+}
+
+/* For Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #475569 #0f172a; /* thumb track */
+}
+
+/* Ensure proper scrollbar positioning */
+html {
+	scrollbar-gutter: stable;
+}
+
+/* Ensure content doesn't hide under fixed navbar */
+html {
+	scroll-padding-top: 80px; /* Adjust based on your navbar height */
+}
+
+/* Custom animations for smooth effects */
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes pulse {
+	0%, 100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+@keyframes slideInRight {
+	from {
+		transform: scaleX(0);
+		transform-origin: left;
+	}
+	to {
+		transform: scaleX(1);
+		transform-origin: left;
+	}
+}
+
+@keyframes slideOutLeft {
+	from {
+		transform: scaleX(1);
+		transform-origin: right;
+	}
+	to {
+		transform: scaleX(0);
+		transform-origin: right;
+	}
+}
+
+@keyframes glow-pulse {
+	0%, 100% {
+		box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+	}
+	50% {
+		box-shadow: 0 0 40px rgba(59, 130, 246, 0.6), 0 0 60px rgba(59, 130, 246, 0.2);
+	}
+}
+
+@keyframes mesh-drift {
+	0%, 100% { transform: translate(0, 0) scale(1); }
+	33% { transform: translate(30px, -20px) scale(1.05); }
+	66% { transform: translate(-20px, 15px) scale(0.97); }
+}
+
+@keyframes float {
+	0%, 100% { transform: translateY(0px); }
+	50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+	from { background-position: -200% center; }
+	to { background-position: 200% center; }
+}
+
+/* Utility classes */
+.animate-fade-in-up {
+	animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-glow-pulse {
+	animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-float {
+	animation: float 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+	background: linear-gradient(90deg, transparent, rgba(59,130,246,0.15), transparent);
+	background-size: 200% auto;
+	animation: shimmer 2.5s linear infinite;
+}
+
+/* Glass-morphism utilities */
+.glass {
+	background: rgba(15, 23, 42, 0.6);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.glass-card {
+	background: rgba(15, 23, 42, 0.7);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	border: 1px solid rgba(59, 130, 246, 0.2);
+	border-radius: 0.75rem;
+}
+
+.glass-card-hover {
+	transition: all 0.3s ease;
+}
+
+.glass-card-hover:hover {
+	background: rgba(15, 23, 42, 0.85);
+	border-color: rgba(59, 130, 246, 0.4);
+	box-shadow: 0 0 30px rgba(59, 130, 246, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4);
+	transform: translateY(-2px);
+}
+
+/* Glow utilities */
+.glow-blue {
+	box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.glow-blue-lg {
+	box-shadow: 0 0 40px rgba(59, 130, 246, 0.4), 0 0 80px rgba(59, 130, 246, 0.15);
+}
+
+.text-glow-blue {
+	text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+/* Gradient text utility */
+.gradient-text {
+	background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #818cf8 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+/* Mesh gradient background */
+.mesh-bg {
+	background-color: #020617;
+	background-image:
+		radial-gradient(ellipse 80% 60% at 20% 30%, rgba(59, 130, 246, 0.12) 0%, transparent 60%),
+		radial-gradient(ellipse 60% 50% at 80% 70%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
+		radial-gradient(ellipse 40% 40% at 50% 10%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+}
+
+/* Stat card accent bar */
+.stat-card-accent {
+	position: relative;
+	overflow: hidden;
+}
+
+.stat-card-accent::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 2px;
+	background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.8), transparent);
+}
+
+/* Input dark theme override */
+.input-dark {
+	background: rgba(2, 6, 23, 0.8) !important;
+	border: 1px solid rgba(59, 130, 246, 0.25) !important;
+	color: #f1f5f9 !important;
+	transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-dark:focus {
+	border-color: rgba(59, 130, 246, 0.6) !important;
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+	outline: none !important;
+}
+
+.input-dark::placeholder {
+	color: #475569 !important;
+}
+
+.input-dark:invalid, .input-dark.error {
+	border-color: rgba(239, 68, 68, 0.6) !important;
+}
+
+/* Select dark theme */
+.select-dark {
+	background: rgba(2, 6, 23, 0.8) !important;
+	border: 1px solid rgba(59, 130, 246, 0.25) !important;
+	color: #f1f5f9 !important;
+}
+
+.select-dark option {
+	background: #0f172a !important;
+	color: #f1f5f9 !important;
+}
+
+/* Navbar hover underline animation */
+.nav-link-underline {
+	position: relative;
+}
+
+.nav-link-underline::after {
+	content: '';
+	position: absolute;
+	bottom: -4px;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background-color: var(--primary);
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform 0.3s ease-in-out;
+}
+
+.nav-link-underline:hover::after {
+	transform: scaleX(1);
+	transform-origin: left;
+}
+
+.nav-link-underline:not(:hover)::after {
+	transform-origin: right;
+}
+
+/* Override any focus rings to match brand */
+*:focus-visible {
+	outline: 2px solid var(--ring);
+	outline-offset: 2px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+	/* Improve touch targets */
+	button, a, input, select, textarea {
+		min-height: 44px;
+	}
+	
+	/* Better text sizing on mobile */
+	body {
+		font-size: 16px;
+		line-height: 1.6;
+	}
+	
+	/* Prevent text inflation on landscape */
+	html {
+		-webkit-text-size-adjust: none;
+		text-size-adjust: none;
+	}
+}
+
+/* Extra small mobile devices (iPhone SE, small Android) */
+@media (max-width: 375px) {
+	/* Reduce font sizes slightly for very small screens */
+	body {
+		font-size: 14px;
+	}
+	
+	/* Tighter container padding */
+	.container {
+		padding-left: 0.75rem;
+		padding-right: 0.75rem;
+	}
+	
+	/* Smaller headings on tiny screens */
+	h1 {
+		font-size: 1.75rem !important;
+		line-height: 1.2;
+	}
+	
+	h2 {
+		font-size: 1.5rem !important;
+	}
+	
+	h3 {
+		font-size: 1.25rem !important;
+	}
+	
+	/* Adjust button padding for small screens */
+	button {
+		padding-left: 1rem;
+		padding-right: 1rem;
+		font-size: 0.875rem;
+	}
+}
+
+/* Critical fixes for screens under 425px */
+@media (max-width: 425px) {
+	/* Prevent text overflow */
+	html {
+		font-size: 15px;
+	}
+	
+	body {
+		font-size: 0.9rem;
+		overflow-x: hidden;
+	}
+	
+	/* Force all containers to respect viewport width */
+	.container, section, div {
+		max-width: 100vw;
+		overflow-x: hidden;
+	}
+	
+	/* Headings - prevent breaking layout */
+	h1 {
+		font-size: clamp(1.5rem, 6vw, 2.25rem) !important;
+		line-height: 1.25;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		hyphens: auto;
+	}
+	
+	h2 {
+		font-size: clamp(1.25rem, 5vw, 1.875rem) !important;
+		line-height: 1.3;
+		word-wrap: break-word;
+	}
+	
+	h3 {
+		font-size: clamp(1.1rem, 4.5vw, 1.5rem) !important;
+		line-height: 1.35;
+	}
+	
+	h4, h5, h6 {
+		font-size: clamp(1rem, 4vw, 1.25rem) !important;
+	}
+	
+	/* Paragraphs and text */
+	p {
+		font-size: clamp(0.875rem, 3.5vw, 1rem);
+		line-height: 1.6;
+		word-wrap: break-word;
+	}
+	
+	/* Buttons - larger touch targets */
+	button, .button, a[role="button"] {
+		min-height: 48px;
+		padding: 0.75rem 1rem;
+		font-size: clamp(0.875rem, 3.5vw, 1rem);
+		white-space: nowrap;
+	}
+	
+	/* Card and grid adjustments */
+	.grid {
+		grid-template-columns: 1fr !important;
+		gap: 1rem !important;
+	}
+	
+	/* Reduce excessive spacing */
+	section {
+		padding-top: 2.5rem !important;
+		padding-bottom: 2.5rem !important;
+	}
+	
+	/* Images and media */
+	img, video, svg, iframe {
+		max-width: 100%;
+		height: auto;
+		display: block;
+	}
+	
+	/* Flexbox fixes */
+	.flex {
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+	
+	/* Container horizontal padding */
+	.container, section > div {
+		padding-left: clamp(0.75rem, 3vw, 1rem) !important;
+		padding-right: clamp(0.75rem, 3vw, 1rem) !important;
+	}
+	
+	/* Prevent wide elements from causing horizontal scroll */
+	* {
+		max-width: 100%;
+	}
+	
+	input, textarea, select {
+		max-width: 100%;
+	}
+}
+
+/* Touch-friendly interactions */
+.touch-manipulation {
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+button, a {
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Cursor pointer for all interactive elements */
+button, 
+a, 
+[role="button"],
+.button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+select,
+label[for],
+[onclick],
+[tabindex]:not([tabindex="-1"]) {
+	cursor: pointer;
+}
+
+button:disabled,
+a[disabled],
+[aria-disabled="true"] {
+	cursor: not-allowed;
+}
+
+/* Ensure all button variants have pointer cursor */
+button:hover,
+a:hover,
+[role="button"]:hover {
+	cursor: pointer;
+}
+
+/* Improve smooth scrolling */
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		scroll-behavior: smooth;
+	}
+}
+
+/* Container responsive adjustments */
+.container {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+	.container {
+		max-width: 640px;
+		padding-left: 1.5rem;
+		padding-right: 1.5rem;
+	}
+}
+
+@media (min-width: 768px) {
+	.container {
+		max-width: 768px;
+	}
+}
+
+@media (min-width: 1024px) {
+	.container {
+		max-width: 1024px;
+		padding-left: 2rem;
+		padding-right: 2rem;
+	}
+}
+
+@media (min-width: 1280px) {
+	.container {
+		max-width: 1280px;
+	}
+}
+
+@media (min-width: 1536px) {
+	.container {
+		max-width: 1536px;
+	}
+}
+
+/* Utility classes for better mobile spacing */
+@media (max-width: 640px) {
+	/* Reduce excessive vertical spacing on mobile */
+	section {
+		padding-top: clamp(3rem, 10vw, 6rem);
+		padding-bottom: clamp(3rem, 10vw, 6rem);
+	}
+	
+	/* Better card spacing */
+	.grid {
+		gap: clamp(0.75rem, 3vw, 1.5rem);
+	}
+	
+	/* Improve readability */
+	p, li {
+		line-height: 1.7;
+	}
+}
+
+/* Handle very wide content on small screens */
+img, video, iframe {
+	max-width: 100%;
+	height: auto;
+}
+
+/* Prevent content from touching edges */
+* {
+	box-sizing: border-box;
+}
