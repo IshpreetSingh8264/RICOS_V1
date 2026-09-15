@@ -1,0 +1,52 @@
+HEALTH API ENDPOINTS
+
+Both user_backend and official_backend have protected health check endpoints that require JWT authentication.
+
+---
+
+USER BACKEND (port 8080)
+
+GET /health
+Headers: Authorization: Bearer <token>
+Response:
+{
+  "status": "ok",
+  "timestamp": "2025-11-15T10:30:00.000Z",
+  "service": "user_backend",
+  "user": {
+    "userId": 1,
+    "email": "user@example.com",
+    "userType": "user"
+  }
+}
+
+---
+
+OFFICIAL BACKEND (port 8081)
+
+GET /health
+Headers: Authorization: Bearer <token>
+Response:
+{
+  "status": "ok",
+  "timestamp": "2025-11-15T10:30:00.000Z",
+  "service": "official_backend",
+  "user": {
+    "userId": 2,
+    "email": "ngo@example.com",
+    "userType": "ngo"
+  }
+}
+
+---
+
+AUTHENTICATION
+- Both endpoints require a valid JWT token in the Authorization header
+- Token must be obtained from authentication endpoints in common app (port 3000)
+- Token format: Bearer <access_token>
+- The response includes the decoded user information from the JWT payload
+
+TESTING
+1. First, signup/signin via common app to get access_token
+2. Use the token to call health endpoints on respective backends
+3. Health endpoints will validate the token and return user context

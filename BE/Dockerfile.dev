@@ -1,0 +1,26 @@
+# Development Dockerfile - with hot reload
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies for development
+RUN apk add --no-cache curl
+
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install all dependencies (including dev)
+RUN npm install
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Copy source code
+COPY . .
+
+# Expose ports
+EXPOSE 3000 8080 8081
+
+# Command will be overridden by docker-compose
+CMD ["npm", "run", "start:dev"]

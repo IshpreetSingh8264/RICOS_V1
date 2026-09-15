@@ -1,0 +1,71 @@
+AUTHENTICATION API - COMMON SERVICE (port 3000)
+
+All authentication handled centrally in Common app
+
+SIGNUP ENDPOINTS:
+
+1. POST /auth/signup/user (Citizen/Public User)
+   Body: full_name, dob, gender, phone_number, alternate_phone, email, password,
+         current_address, pincode, city, state, country, aadhar_id,
+         blood_group, medical_conditions, allergies, disabilities,
+         emergency_contact_name, emergency_contact_relation, emergency_contact_phone,
+         primary_language, secondary_language, communication_assistance,
+         live_location_permission, home_location_lat, home_location_lng
+   Response: { access_token, user_type: 'user' }
+
+2. POST /auth/signup/ngo
+   Body: ngo_name, registration_number, ngo_type, year_established, mission_statement,
+         email, password, official_contact, alternate_contact, website,
+         registered_address, operational_areas (string[]), location_lat, location_lng,
+         admin_name, admin_designation, admin_mobile, admin_email,
+         aadhar_card, resource_types (string[]), team_strength, bank_account_number
+   Response: { access_token, user_type: 'ngo' }
+   Creates: NGO + Responder entry
+   Note: operational_areas and resource_types are arrays
+
+3. POST /auth/signup/govt
+   Body: agency_name, department, govt_level, official_id, department_code,
+         email, password, hq_address, incharge_name, incharge_mobile, incharge_email,
+         control_room_number, jurisdiction_area (string[]), resource_types (string[]), resource_capacity,
+         bank_account_number
+   Response: { access_token, user_type: 'govt' }
+   Creates: Government + Responder entry
+   Note: jurisdiction_area and resource_types are arrays
+
+4. POST /auth/signup/volunteer
+   Body: group_name, volunteer_type, group_size, operational_areas (string[]),
+         email, password, social_media_link, leader_name, leader_phone, leader_email,
+         id_proof, has_medical_training, has_first_aid_cert, has_vehicle, languages_spoken (string[])
+   Response: { access_token, user_type: 'volunteer' }
+   Creates: Volunteer + Responder entry
+   Note: operational_areas and languages_spoken are arrays
+
+SIGNIN ENDPOINT:
+
+POST /auth/signin
+Body: { email, password }
+Response: { access_token, user_type }
+Note: Seamless signin - automatically detects user_type from all_users table
+      No need to specify user_type - system determines it automatically
+
+DATABASE STRUCTURE:
+- all_users: unified authentication table (email, password, user_type, foreign keys)
+- users: citizen/public user data (NO password field)
+- ngos: NGO organization data (NO password field)
+- governments: government agency data (NO password field)
+- volunteers: volunteer group data (NO password field)
+- responders: unified responder table (foreign keys to ngo/govt/volunteer)
+
+AUTHENTICATION FLOW:
+1. Signup creates entry in specific table (user/ngo/govt/volunteer)
+2. Creates entry in all_users with password and foreign key
+3. Signin queries only all_users table for authentication
+4. System automatically detects user_type from all_users (no manual input needed)
+5. Password stored only in all_users table
+6. Returns JWT token with user_type included in response
+
+JWT CONFIG:
+- Secret: JWT_SECRET from common.env
+- Expires: 24h
+- Payload: { sub: userId, email, userType }
+- userType: 'user' | 'ngo' | 'govt' | 'volunteer'

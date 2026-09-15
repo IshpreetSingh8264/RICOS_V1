@@ -1,0 +1,44 @@
+PROFILE API
+
+USER BACKEND (port 8080)
+Protected routes (require Bearer token)
+
+- GET /profile
+  Headers: Authorization: Bearer <token>
+  Response: User profile with all fields
+
+- PUT /profile
+  Headers: Authorization: Bearer <token>
+  Body: {
+    first_name?, last_name?, gender?, dob?, location?,
+    address1?, address2?, landmark?, pincode?, city?, state?
+  }
+  Response: Updated profile
+
+- DELETE /profile
+  Headers: Authorization: Bearer <token>
+  Response: { message: "Profile deleted successfully" }
+
+OFFICIAL BACKEND (port 8081)
+Protected routes (require Bearer token)
+
+- GET /profile
+  Headers: Authorization: Bearer <token>
+  Response: Official profile with all fields including official-specific
+
+- PUT /profile
+  Headers: Authorization: Bearer <token>
+  Body: {
+    first_name?, last_name?, gender?, dob?, location?,
+    address1?, address2?, landmark?, pincode?, city?, state?,
+    type?, darpan_unique_id?, organisation_name?
+  }
+  Response: Updated profile
+
+- DELETE /profile
+  Headers: Authorization: Bearer <token>
+  Response: { message: "Profile deleted successfully" }
+
+FIELDS
+Common: first_name, last_name, gender, dob, location, address1, address2, landmark, pincode, city, state
+Official-specific: type, darpan_unique_id, organisation_name, isVerified
