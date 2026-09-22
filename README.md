@@ -1,4 +1,6 @@
-# RICOS - Real-time Inventory & Coordination System
+# RICOS_V1 - Real-time Inventory & Coordination System
+
+> v1.0 production release — built September 2026. Prototype scaled to a deployable disaster-management platform connecting Users, NGOs, Government bodies and Volunteers.
 
 ## Overview
 RICOS is a comprehensive disaster management platform designed to facilitate efficient resource allocation, team coordination, and disaster response. It connects Users, NGOs, Government bodies, and Volunteers in a unified ecosystem.
