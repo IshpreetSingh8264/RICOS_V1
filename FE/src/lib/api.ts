@@ -1,18 +1,22 @@
 /**
  * API Service Layer for RICOS Frontend
- * 
- * Base URLs:
- * - AUTH: http://localhost:3000 (Common Service - Authentication)
- * - USER: http://localhost:8080 (User Backend)
- * - OFFICIAL: http://localhost:8081 (Official Backend - Inventory, Groups, Map Tracking)
+ *
+ * Base URLs are resolved at BUILD time from Vite env vars, so the same source
+ * runs against any host without code changes:
+ * - dev (npm run dev)          -> VITE_* unset, fall back to localhost ports
+ * - docker / production build  -> VITE_*_API_URL='/api/auth' etc. (relative),
+ *                                 nginx on the same origin proxies to backends
+ * - other hosts / domains      -> pass absolute URLs at build time
  */
+
+const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '');
 
 // Base URLs
 export const API_BASE_URLS = {
-  AUTH: 'http://localhost:3000',
-  USER: 'http://localhost:8080',
-  OFFICIAL: 'http://localhost:8081',
-} as const;
+  AUTH: trimTrailingSlash(import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3000'),
+  USER: trimTrailingSlash(import.meta.env.VITE_USER_API_URL || 'http://localhost:8080'),
+  OFFICIAL: trimTrailingSlash(import.meta.env.VITE_OFFICIAL_API_URL || 'http://localhost:8081'),
+};
 
 // ==================== TYPES ====================
 
@@ -780,7 +784,10 @@ export const newsAPI = {
     longitude?: number,
     refresh?: boolean,
   ): Promise<NewsResponse> {
-    const url = new URL(`${API_BASE_URLS.USER}/news/disaster`);
+    // API_BASE_URLS.USER may be relative (e.g. "/api/user") so the app stays
+    // domain-agnostic; new URL() needs a base for relative input. An absolute
+    // base is returned unchanged, so this works either way.
+    const url = new URL(`${API_BASE_URLS.USER}/news/disaster`, window.location.origin);
     if (location) {
       url.searchParams.append('location', location);
     }

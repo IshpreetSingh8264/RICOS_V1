@@ -12,6 +12,18 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Build-time API base URLs. Relative paths keep every request on the app's own
+# origin, so the nginx below proxies /api/* to the backends: one public port,
+# no CORS in the browser path, and no rebuild when the domain changes.
+ARG VITE_AUTH_API_URL=/api/auth
+ARG VITE_USER_API_URL=/api/user
+ARG VITE_OFFICIAL_API_URL=/api/official
+ARG VITE_USER_BACKEND_URL=/api/user
+ENV VITE_AUTH_API_URL=$VITE_AUTH_API_URL \
+    VITE_USER_API_URL=$VITE_USER_API_URL \
+    VITE_OFFICIAL_API_URL=$VITE_OFFICIAL_API_URL \
+    VITE_USER_BACKEND_URL=$VITE_USER_BACKEND_URL
+
 # Build the application
 RUN npm run build
 
